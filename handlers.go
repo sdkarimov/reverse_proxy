@@ -10,6 +10,7 @@ import (
 
 func PostRegClient(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
+	log.Printf(r.RequestURI)
 	if port, ok := query["port"]; ok {
 
 		ip := strings.Split(r.RemoteAddr, ":")[0]
@@ -19,7 +20,7 @@ func PostRegClient(w http.ResponseWriter, r *http.Request) {
 		storage.SetClient(host)
 		log.Print(storage.GetClients())
 	} else {
-		w.WriteHeader(400)
+		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("No port param"))
 	}
 }

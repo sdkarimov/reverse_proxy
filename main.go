@@ -3,13 +3,19 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"github.com/gorilla/pat"
 )
 
-func main() {
+var mux *pat.Router = pat.New()
 
-	http.HandleFunc("/reg", PostRegClient)
-	http.HandleFunc("/clients", GetRegClients)
-	log.Printf("Starting Server ")
-	log.Fatal(http.ListenAndServe(":8888", nil))
+func init() {
+	mux.Get("/api/reg", PostRegClient)
+	mux.Get("/api/clients", GetRegClients)
+}
+
+func main() {
+	log.Printf("Starting Server on port 8888")
+	log.Fatal(http.ListenAndServe(":8888", mux))
 
 }
