@@ -12,6 +12,7 @@ var mux *pat.Router = pat.New()
 func init() {
 	mux.Get("/api/reg", PostRegClient)
 	mux.Get("/api/clients", GetRegClients)
+	mux.Get("/api/client/{id}", GetClientInfo)
 }
 
 func main() {

@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"log"
+	"strconv"
 	"sync"
 	"sync/atomic"
 )
@@ -24,8 +26,25 @@ func SetClient(host string) {
 	cache[getNextID()] = host
 }
 
-func GetClients() map[int32]string {
+func GetClients() []int32 {
 	mux.Lock()
 	defer mux.Unlock()
-	return cache
+
+	ret := make([]int32, 0)
+	for k, _ := range cache {
+		ret = append(ret, k)
+	}
+	return ret
+}
+
+func GetClient(id string) (string, bool) {
+	ID, err := strconv.Atoi(id)
+	if err != nil {
+		log.Printf(err.Error())
+		return "", false
+	}
+	mux.Lock()
+	defer mux.Unlock()
+	client, ok := cache[int32(ID)]
+	return client, ok
 }
