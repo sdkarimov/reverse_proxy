@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -8,11 +10,31 @@ import (
 )
 
 var mux *pat.Router = pat.New()
+var routes map[string]string
 
 func init() {
-	mux.Get("/api/reg", PostRegClient)
-	mux.Get("/api/clients", GetRegClients)
-	mux.Get("/api/client/{id}", GetClientInfo)
+	routes = map[string]string{
+		"reg":          "/api/reg",
+		"clients":      "/api/clients",
+		"client/stats": "/api/client/{id}/stats",
+	}
+	mux.Get(routes["reg"], PostRegClient)
+	mux.Get(routes["clients"], GetRegClients)
+	mux.Get(routes["client/stats"], GetClientInfo)
+
+	mux.Get(routes["api_list"], func(w http.ResponseWriter, r *http.Request) {
+		var resp []string
+		for _, v := range routes {
+			resp = append(resp, v)
+		}
+		j, err := json.Marshal(resp)
+		if err != nil {
+			log.Printf("Error: %s", err.Error())
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		fmt.Fprintln(w, string(j))
+	})
 }
 
 func main() {
