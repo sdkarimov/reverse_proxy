@@ -1,0 +1,42 @@
+version: '3'
+services:
+  proxy:
+    image: golang
+    working_dir: /code
+    command: bash -c "go build . && ./reverse_proxy"
+    volumes:
+      - .:/code
+  client1:
+    build:
+      context: .
+    image: proxy_client
+    command: bash -c "sleep 4; python /code/clientReg.py && python -m SimpleHTTPServer"
+    volumes:
+      - .:/code
+    links:
+      - proxy
+  client2:
+    image: proxy_client
+    command: bash -c "sleep 4; python /code/clientReg.py && python -m SimpleHTTPServer"
+    volumes:
+      - .:/code
+    links:
+      - proxy
+  client3:
+    image: proxy_client
+    command: bash -c "sleep 4; python /code/clientReg.py && python -m SimpleHTTPServer"
+    volumes:
+      - .:/code
+    links:
+      - proxy        
+  user:
+    image: curlimages/curl
+    command: sh -c "
+        sleep 7; echo '1. Get api list ' && curl proxy:8888/api_list 2>/dev/null  && 
+        echo '2. Get clients list' && curl proxy:8888/api/clients  2>/dev/null  && 
+        echo '3. Get clients stat client ID 1' && curl proxy:8888/api/client/1/stats 2>/dev/null && 
+        echo '3. Get clients stat client ID 2' && curl proxy:8888/api/client/2/stats 2>/dev/null && 
+        echo '3. Get clients stat client ID 3' && curl proxy:8888/api/client/3/stats 2>/dev/null
+        "
+    links:
+      - proxy    
