@@ -22,7 +22,7 @@ func init() {
 	mux.Get(routes["clients"], GetRegClients)
 	mux.Get(routes["client/stats"], GetClientInfo)
 
-	mux.Get(routes["api_list"], func(w http.ResponseWriter, r *http.Request) {
+	mux.Get("/api_list", func(w http.ResponseWriter, r *http.Request) {
 		var resp []string
 		for _, v := range routes {
 			resp = append(resp, v)
